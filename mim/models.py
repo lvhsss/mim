@@ -1,0 +1,43 @@
+from django.db import models
+from django.conf import settings
+import os
+
+class MIM(models.Model):
+    file = models.FileField(upload_to='source/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='memes')
+    likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
+    meme_id = models.AutoField(primary_key=True)
+    description = models.TextField(blank=True)
+    avatar = models.URLField(blank=True, null=True)  # URL аватарки з Discord
+
+    def __str__(self):
+        return f"by {self.user.username} ({self.meme_id})"
+
+    def delete(self, *args, **kwargs):
+        if self.file and os.path.isfile(self.file.path):
+            os.remove(self.file.path)
+        super().delete(*args, **kwargs)
+
+class LastSubmission(models.Model):
+    timestamp = models.DateTimeField(auto_now=True)
+
+class Vote(models.Model):
+    meme = models.ForeignKey(MIM, on_delete=models.CASCADE, related_name='votes')
+    ip_address = models.CharField(max_length=45)
+    is_like = models.BooleanField()
+
+    class Meta:
+        unique_together = ('meme', 'ip_address')
+
+class Comment(models.Model):
+    meme = models.ForeignKey(MIM, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comments', null=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    admin_note = models.TextField(blank=True, null=True)
+    avatar = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on meme {self.meme.meme_id}"

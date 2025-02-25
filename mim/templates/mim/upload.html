@@ -1,0 +1,42 @@
+{% extends "mim/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="page">
+        <div class="loader"></div>
+        {% if user.is_authenticated %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" {% if time_left > 0 %}disabled{% endif %}>load</button>
+            </form>
+            <p>your submit will be available: <span id="timer">{{ time_left }}</span>s</p>
+        {% else %}
+            <p>Please <a href="{% url 'social:begin' 'discord' %}">login with Discord</a> to upload a meme.</p>
+        {% endif %}
+        <p><a href="{% url 'memes' %}">home -></a></p>
+
+        <script>
+            let timeLeft = Number("{{ time_left }}");
+            const timerElement = document.getElementById('timer');
+            const submitButton = document.querySelector('button[type="submit"]');
+        
+            function updateTimer() {
+                if (timeLeft > 0) {
+                    timerElement.textContent = timeLeft;
+                    submitButton.disabled = true;
+                    timeLeft--;
+                } else {
+                    timerElement.textContent = '0';
+                    submitButton.disabled = false;
+                    clearInterval(timerInterval);
+                }
+            }
+        
+            if (timeLeft > 0) {
+                updateTimer();
+                const timerInterval = setInterval(updateTimer, 1000);
+            }
+        </script>
+    </div>
+{% endblock %}

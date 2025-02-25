@@ -1,0 +1,215 @@
+{% extends "mim/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="page" id="page">
+        <div class="loader"></div>
+        <header class="header">
+            <nav class="nav">
+                <div class="logo-wrap">
+                    <a href="{% url 'memes' %}">
+                        <img src="{% static 'img/like3.png' %}" alt="" class="logo-head">
+                        <p>Bitcoin Wizards</p>
+                    </a>
+                </div>
+                <div class="tabs">
+                    <p><a href="{% url 'memes' %}" style="color: #707070;">New</a></p>
+                    <p><a href="{% url 'top_memes' %}" style="color: #707070;">Top of All Time</a></p>
+                    <p><a href="{% url 'trending' %}" style="font-weight: bold; color: black;">Trending</a></p>
+                </div>
+                <div class="discord">
+                    <button>Connect Discord</button>
+                </div>
+            </nav>
+        </header>
+        <main class="main">
+            <div class="time-filter" style="margin: 20px auto; text-align: center;">
+                <p>Sort by activity in the last:</p>
+                <a href="{% url 'trending' %}?time=1h" {% if time_filter == '1h' %}style="font-weight: bold; color: #4CAF50;"{% endif %}>1 hour</a> |
+                <a href="{% url 'trending' %}?time=24h" {% if time_filter == '24h' %}style="font-weight: bold; color: #4CAF50;"{% endif %}>24 hours</a> |
+                <a href="{% url 'trending' %}?time=7d" {% if time_filter == '7d' %}style="font-weight: bold; color: #4CAF50;"{% endif %}>7 days</a>
+            </div>
+            <div class="meme-grid">
+                {% for item in memes_with_votes %}
+                    {% with meme=item.meme %}
+                        <div class="meme-block" data-meme-id="{{ meme.meme_id }}">
+                            <div class="post-wrap">
+                                <div class="profile-head">
+                                    <div class="profile">
+                                        <div class="logo">
+                                            <img src="{% static 'img/like3.png' %}" alt="">
+                                        </div>
+                                        <div class="name">
+                                            <p>{{ meme.author }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="id">
+                                        <p>{{ meme.uploaded_at }}</p>
+                                    </div>
+                                </div>
+                                <div class="profile-body">
+                                    {% if meme.description %}
+                                        <p>{{ meme.description }}</p>
+                                    {% endif %}
+                                    {% if meme.file.name|lower|slice:"-4:" == '.mp4' %}
+                                        <a href="{% url 'meme_detail' meme_id=meme.meme_id %}" class="meme-link">
+                                            <video autoplay loop muted class="mp4 {{ item.format_class }}">
+                                                <source src="{{ meme.file.url }}" type="video/mp4">
+                                            </video>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'meme_detail' meme_id=meme.meme_id %}" class="meme-link">
+                                            <img src="{{ meme.file.url }}" alt="can`t be loaded" class="img {{ item.format_class }}">
+                                        </a>
+                                    {% endif %}
+                                    <div class="meme-info">
+                                        <form method="post" class="social-form" data-meme-id="{{ meme.meme_id }}">
+                                            {% csrf_token %}
+                                            <div class="social-1">
+                                                <button type="submit" name="action" value="like" class="like-btn social-btn" {% if item.has_voted %}data-liked="true"{% else %}data-liked="false"{% endif %}>
+                                                    <img src="{% static 'img/like.png' %}" alt="" class="social like-icon">
+                                                    <p>{{ meme.likes }}</p>
+                                                </button>
+                                                <a href="{% url 'meme_detail' meme_id=meme.meme_id %}#comment-form" class="comment-btn social-btn">
+                                                    <img src="{% static 'img/comment.png' %}" alt="Comment" class="social">
+                                                    <p>Comments: {{ item.comment_count }}</p>
+                                                </a>
+                                            </div>
+                                            <div class="social-2">
+                                                <a href="{{ meme.file.url }}" download class="download-btn social-btn">
+                                                    <img src="{% static 'img/load.png' %}" alt="Download" class="social">
+                                                </a>
+                                                <button class="share-btn social-btn" data-meme-id="{{ meme.meme_id }}">
+                                                    <img src="{% static 'img/share.png' %}" alt="Share" class="social">
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endwith %}
+                {% empty %}
+                    <p>nothing here ...</p>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function getCSRFToken() {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 'csrftoken'.length + 1) === 'csrftoken=') {
+                        cookieValue = decodeURIComponent(cookie.substring('csrftoken'.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const memeId = this.closest('.social-form').getAttribute('data-meme-id');
+                const isLiked = this.getAttribute('data-liked') === 'true';
+                const likeIcon = this.querySelector('.like-icon');
+                const likesCount = this.querySelector('p');
+
+                const formData = new FormData();
+                formData.append('meme_id', memeId);
+                formData.append('action', 'like');
+
+                fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        likesCount.textContent = data.likes;
+                        likeIcon.src = isLiked ? "{% static 'img/like.png' %}" : "{% static 'img/like2.png' %}";
+                        this.setAttribute('data-liked', isLiked ? 'false' : 'true');
+                    } else {
+                        alert('Failed to like meme. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while liking the meme.');
+                });
+            });
+        });
+
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const memeId = this.getAttribute('data-meme-id');
+                const memeUrl = `${window.location.origin}/memes/${memeId}/`;
+                navigator.clipboard.writeText(memeUrl).then(() => {
+                    const message = document.createElement('div');
+                    message.className = 'copy-message';
+                    message.textContent = 'Link copied to clipboard!';
+                    document.body.appendChild(message);
+                    message.style.position = 'fixed';
+                    message.style.top = '50%';
+                    message.style.left = '50%';
+                    message.style.transform = 'translate(-50%, -50%)';
+                    message.style.backgroundColor = '#4CAF50';
+                    message.style.color = 'white';
+                    message.style.padding = '10px 20px';
+                    message.style.borderRadius = '5px';
+                    message.style.zIndex = '1000';
+                    setTimeout(() => message.remove(), 1000);
+                }).catch(err => {
+                    alert('Failed to copy link.');
+                });
+            });
+        });
+
+        // Скрипт для скролінгу лише для сторінки "Trending"
+        window.addEventListener('load', function() {
+            const lastMemeId = sessionStorage.getItem('lastViewedMemeIdTrending');
+            if (lastMemeId) {
+                const scrollPosition = parseInt(sessionStorage.getItem(`scrollPositionTrending_${lastMemeId}`), 10);
+                if (!isNaN(scrollPosition)) {
+                    setTimeout(() => {
+                        const headerHeight = document.querySelector('.header')?.offsetHeight || 70;
+                        window.scrollTo({
+                            top: Math.max(scrollPosition + headerHeight - 20, 0),
+                            behavior: "smooth"
+                        });
+                    }, 100);
+                }
+            }
+        });
+
+        document.querySelectorAll('.meme-block a').forEach(link => {
+            link.addEventListener('click', function() {
+                const memeBlock = this.closest('.meme-block');
+                const memeId = memeBlock.getAttribute('data-meme-id');
+                const scrollPosition = window.scrollY || window.pageYOffset;
+                sessionStorage.setItem(`scrollPositionTrending_${memeId}`, scrollPosition);
+                sessionStorage.setItem('lastViewedMemeIdTrending', memeId);
+            });
+        });
+
+        // Очищення позиції при переході на інші сторінки
+        document.querySelectorAll('.tabs a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (!this.href.includes('trending')) {
+                    sessionStorage.removeItem('lastViewedMemeIdTrending');
+                    // Не очищаємо всі позиції, щоб зберегти їх для "New" чи "Top"
+                }
+            });
+        });
+    </script>
+{% endblock %}

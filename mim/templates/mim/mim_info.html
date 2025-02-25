@@ -1,0 +1,78 @@
+{% extends "mim/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="page" id="page">
+        <div class="loader"></div>
+        <main class="main mim-info">
+            <div class="mim_info">
+                <div class="mim-detail-container">
+                    {% if meme.file.name|lower|slice:"-4:" == '.mp4' %}
+                        <div class="mim-info-mp4 {{ format_class }}">
+                            <video autoplay loop muted class="mp4" style="width: 100%; height: 100%;">
+                                <source src="{{ meme.file.url }}" type="video/mp4">
+                            </video>
+                        </div>
+                    {% else %}
+                        <div class="mim-info-img {{ format_class }}">
+                            <img src="{{ meme.file.url }}" alt="can't be loaded" class="img" style="width: 100%; height: 100%;">
+                        </div>
+                    {% endif %}
+                    <div class="meme-info">
+                        <p>ID - {{ meme.meme_id }}</p>
+                        <p>by - {{ meme.user.username }}</p>
+                        <p>Uploaded at - {{ meme.uploaded_at }}</p>
+                        <p>Likes - {{ meme.likes }}</p>
+                        <p>Dislikes - {{ meme.dislikes }}</p>
+                        {% if meme.description %}
+                            <p>Description - {{ meme.description }}</p>
+                        {% endif %}
+                        {% for comment in comments %}
+                            <p>
+                                {% if comment.avatar %}
+                                    <img src="{{ comment.avatar }}" alt="" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
+                                {% else %}
+                                    <img src="{% static 'img/like3.png' %}" alt="" style="width: 30px; height: 30px; vertical-align: middle;">
+                                {% endif %}
+                                <strong>{{ comment.user.username }}</strong> ({{ comment.created_at }}): {{ comment.content }}
+                            </p>
+                            {% if comment.admin_note %}
+                                <p style="color: red;">* {{ comment.admin_note }}</p>
+                            {% endif %}
+                        {% empty %}
+                            <p>No comments yet.</p>
+                        {% endfor %}
+                        {% if user.is_authenticated %}
+                            <form method="post" id="comment-form">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <button type="submit">Submit Comment</button>
+                            </form>
+                        {% else %}
+                            <p>Please <a href="{% url 'social:begin' 'discord' %}">login with Discord</a> to comment.</p>
+                        {% endif %}
+                        <p><a href="{% url 'memes' %}" id="back-to-memes">Back to Memes</a></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentPage = window.location.pathname;
+            if (currentPage.includes("memes")) {
+                const savedPosition = sessionStorage.getItem("scrollPosition");
+                if (savedPosition) {
+                    setTimeout(() => {
+                        window.scrollTo(0, parseInt(savedPosition));
+                    }, 100);
+                }
+            }
+        });
+
+        document.getElementById('back-to-memes').addEventListener('click', function(e) {
+            sessionStorage.setItem("scrollPosition", window.scrollY || window.pageYOffset);
+        });
+    </script>
+{% endblock %}
