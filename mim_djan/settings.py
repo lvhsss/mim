@@ -77,12 +77,12 @@ WSGI_APPLICATION = 'mim_djan.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mim_db',
-        'USER': 'postgres',
-        'PASSWORD': '1233955995Rtfgg@',
-        'HOST': 'localhost',
-        'PORT': '6723',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'fler432v$mim_db',  
+        'USER': 'fler432v',        
+        'PASSWORD': '1233955995Rtfgg@gg', 
+        'HOST': 'fler432v.mysql.pythonanywhere-services.com',
+        'PORT': '3306',
     }
 }
 
