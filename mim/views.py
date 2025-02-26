@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+import requests
 from .form import MIMForm, CommentForm
 from .models import MIM, LastSubmission, Vote, Comment
 from PIL import Image
@@ -49,6 +51,32 @@ def format_memes(memes_list, request):
             'comment_count': comment_count
         })
     return memes_with_votes
+
+def discord_logout(request):
+    if request.user.is_authenticated:
+        # Отримуємо токен доступу з social-auth
+        try:
+            social = request.user.social_auth.get(provider='discord')
+            access_token = social.extra_data.get('access_token')
+            if access_token:
+                # Анулюємо токен через Discord API
+                revoke_url = 'https://discord.com/api/oauth2/token/revoke'
+                data = {
+                    'client_id': 'твій_client_id',  # Заміни на свій Client ID
+                    'client_secret': 'твій_client_secret',  # Заміни на свій Client Secret
+                    'token': access_token,
+                }
+                response = requests.post(revoke_url, data=data)
+                response.raise_for_status()  # Перевірка на помилки
+        except Exception as e:
+            # Якщо щось пішло не так, просто ігноруємо (логін все одно завершиться)
+            print(f"Ошибка при анулюванні токена: {e}")
+
+        # Завершуємо локальну сесію
+        logout(request)
+
+    # Перенаправляємо на головну сторінку
+    return redirect('/')
 
 def get_meme_dimensions(file_path):
     try:
@@ -200,14 +228,18 @@ def upload_meme(request):
         if form.is_valid():
             meme = form.save(commit=False)
             meme.user = request.user
-            meme.avatar = request.user.social_auth.get(provider='discord').extra_data.get('avatar_url', '')
+            discord_data = request.user.social_auth.get(provider='discord').extra_data
+            user_id = discord_data.get('id')
+            avatar_hash = discord_data.get('avatar')
+            if user_id and avatar_hash:
+                meme.avatar = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar_hash}.png?size=128"
             meme.save()
             LastSubmission.objects.all().delete()
             LastSubmission.objects.create()
             return redirect('memes')
     else:
         form = MIMForm()
-    
+
     last_submit = LastSubmission.objects.first()
     cooldown = 1 * 5
     if last_submit:
@@ -215,7 +247,7 @@ def upload_meme(request):
         time_left = max(0, int(time_left))
     else:
         time_left = 0
-    
+
     return render(request, 'mim/upload.html', {'form': form, 'time_left': time_left})
 
 @login_required(login_url='/login/')

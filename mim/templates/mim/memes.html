@@ -20,16 +20,9 @@
                 </div>
                 <div class="discord">
                     {% if user.is_authenticated %}
-                        <p>Welcome, {{ user.username }}! 
-                            <a href="{% url 'logout' %}">
-                                <img src="../../../static/img/discord-bg.png" alt="" class="discord-bg">
-                                Logout
-                        </a></p>
+                        <p>{{ user.username }} connected <a href="{% url 'logout' %}">Logout</a></p>
                     {% else %}
-                        <a href="{% url 'social:begin' 'discord' %}">
-                            <img src="../../../static/img/discord-bg.png" alt="dsad" class="discord-bg">
-                            <button>Connect Discord</button>
-                        </a>
+                        <a href="{% url 'social:begin' 'discord' %}"><button>Connect Discord</button></a>
                     {% endif %}
                 </div>
             </nav>

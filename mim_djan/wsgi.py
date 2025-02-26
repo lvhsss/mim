@@ -1,16 +1,11 @@
-"""
-WSGI config for mim_djan project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
-"""
-
 import os
+import sys
+
+path = '/home/fler432v/mim_djan'
+if path not in sys.path:
+    sys.path.append(path)
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'mim_djan.settings'
 
 from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mim_djan.settings')
-
 application = get_wsgi_application()

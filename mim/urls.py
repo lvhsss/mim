@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth.views import LogoutView
 from . import views
 
 urlpatterns = [
@@ -7,4 +8,5 @@ urlpatterns = [
     path('trending/', views.trending_memes, name='trending'),
     path('upload/', views.upload_meme, name='upload_meme'),
     path('memes/<int:meme_id>/', views.meme_detail, name='meme_detail'),
+    path('accounts/logout/', views.discord_logout, name='logout'),
 ]
