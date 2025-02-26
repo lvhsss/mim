@@ -5,6 +5,7 @@
     <div class="page" id="page">
         <div class="loader"></div>
         <main class="main mim-info">
+            <p><a href="{% url 'memes' %}" id="back-to-memes"><</a></p>
             <div class="mim_info">
                 <div class="mim-detail-container">
                     {% if meme.file.name|lower|slice:"-4:" == '.mp4' %}
@@ -19,22 +20,37 @@
                         </div>
                     {% endif %}
                     <div class="meme-info">
-                        <p>ID - {{ meme.meme_id }}</p>
-                        <p>by - {{ meme.user.username }}</p>
-                        <p>Uploaded at - {{ meme.uploaded_at }}</p>
-                        <p>Likes - {{ meme.likes }}</p>
-                        <p>Dislikes - {{ meme.dislikes }}</p>
-                        {% if meme.description %}
-                            <p>Description - {{ meme.description }}</p>
+                        <div class="info-static">
+                            <div class="info-author">
+                                <!-- <p class="static-logo">{{ meme.avatar }}</p> -->
+                                <p class="static-author">{{ meme.user.username }}</p>
+                                <p class="static-time">{{ meme.uploaded_at }}</p>
+                            </div>
+                                {% if meme.description %}
+                                <div class="description-wrapper">
+                                    <p class="description-main-info" id="description-{{ meme.meme_id }}">{{ meme.description|linebreaks }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="pers-comment">
+                            {% if user.is_authenticated %}
+                            <form method="post" id="comment-form">
+                                {% csrf_token %}
+                                <input type="text" name="content" placeholder="Write a comment..." class="comment-input" required>
+                                <button type="submit" class="post-button">Post</button>
+                            </form>
+                        {% else %}
+                            <p>Please <a href="{% url 'social:begin' 'discord' %}">login with Discord</a> to comment.</p>
                         {% endif %}
+                        </div>
                         {% for comment in comments %}
-                            <p>
+                            <p class="comment-text">
                                 {% if comment.avatar %}
                                     <img src="{{ comment.avatar }}" alt="" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
                                 {% else %}
                                     <img src="{% static 'img/like3.png' %}" alt="" style="width: 30px; height: 30px; vertical-align: middle;">
                                 {% endif %}
-                                <strong>{{ comment.user.username }}</strong> ({{ comment.created_at }}): {{ comment.content }}
+                                <strong>{{ comment.user.username }}</strong> <span>({{ comment.created_at }})</span> {{ comment.content }}
                             </p>
                             {% if comment.admin_note %}
                                 <p style="color: red;">* {{ comment.admin_note }}</p>
@@ -42,16 +58,6 @@
                         {% empty %}
                             <p>No comments yet.</p>
                         {% endfor %}
-                        {% if user.is_authenticated %}
-                            <form method="post" id="comment-form">
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                                <button type="submit">Submit Comment</button>
-                            </form>
-                        {% else %}
-                            <p>Please <a href="{% url 'social:begin' 'discord' %}">login with Discord</a> to comment.</p>
-                        {% endif %}
-                        <p><a href="{% url 'memes' %}" id="back-to-memes">Back to Memes</a></p>
                     </div>
                 </div>
             </div>
@@ -60,6 +66,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+
             const currentPage = window.location.pathname;
             if (currentPage.includes("memes")) {
                 const savedPosition = sessionStorage.getItem("scrollPosition");

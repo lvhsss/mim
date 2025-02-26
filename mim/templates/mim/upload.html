@@ -4,18 +4,64 @@
 {% block content %}
     <div class="page">
         <div class="loader"></div>
-        {% if user.is_authenticated %}
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" {% if time_left > 0 %}disabled{% endif %}>load</button>
-            </form>
-            <p>your submit will be available: <span id="timer">{{ time_left }}</span>s</p>
-        {% else %}
-            <p>Please <a href="{% url 'social:begin' 'discord' %}">login with Discord</a> to upload a meme.</p>
-        {% endif %}
-        <p><a href="{% url 'memes' %}">home -></a></p>
-
+        <header class="header">
+            <img src="../../../static/img/header.png" alt="" class="header-desgn">
+            <nav class="nav nav-upload">
+                <div class="logo-wrap">
+                    <a href="{% url 'memes' %}">
+                        <img src="{% static 'img/like3.png' %}" alt="" class="logo-head">
+                        <p>MIMeme</p>
+                    </a>
+                </div>
+                <div class="tabs">
+                    <p><a href="{% url 'upload_meme' %}" style="font-weight: bold; color: black;">Upload</a></p>
+                    <p><a href="{% url 'memes' %}" style="font-weight: bold; color: #707070;">New</a></p>
+                    <p><a href="{% url 'top_memes' %}" style="color: #707070;">Top of All Time</a></p>
+                    <p><a href="{% url 'trending' %}" style="color: #707070;">Trending</a></p>
+                </div>
+            </nav>
+        </header>
+        <main class="main">
+            <div class="upload-upl">
+                <div class="upload-prew">
+                    <div class="preview-container" id="preview"></div>
+                </div>
+                <div class="upload-func">
+                    {% if user.is_authenticated %}
+                    <form method="post" enctype="multipart/form-data" id="upload-form">
+                        {% csrf_token %}
+                        <div class="upload-field">
+                            <label for="id_file" class="upload-button">Choose file</label>
+                            <input type="file" id="id_file" name="file" accept="image/*,video/mp4" onchange="previewFile(this)" required>
+                        </div>
+                        <div class="description-field">
+                            {{ form.description }}
+                        </div>
+                        {% if time_left > 0 %}
+                            <p>You must wait {{ time_left }} seconds before uploading again.</p>
+                        {% endif %}
+                        <button type="submit" class="submit-button">load</button>
+                    </form>
+                        <p>your can post in <span id="timer">{{ time_left }}</span>s</p>
+                    {% else %}
+                        <p>Please <a href="{% url 'social:begin' 'discord' %}">login with Discord</a> to upload a meme.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+        <footer class="footer">
+            <nav class="footer-banners">
+                <div class="join">
+                    <img src="../../../static/img/joinus.png" alt="Join Us" class="joinus">
+                    <img src="../../../static/img/arrow.png" alt="" class="arrow">
+                </div>
+                <div class="socials">
+                    <img src="../../../static/img/x.png" alt="">
+                    <img src="../../../static/img/discord.png" alt="">
+                    <img src="../../../static/img/telegram.png" alt="">
+                </div>
+            </nav>
+        </footer>
         <script>
             let timeLeft = Number("{{ time_left }}");
             const timerElement = document.getElementById('timer');
@@ -37,6 +83,62 @@
                 updateTimer();
                 const timerInterval = setInterval(updateTimer, 1000);
             }
+        </script>
+        <script>
+            function previewFile(input) {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = ''; // Очищаємо попереднє прев’ю
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+
+                if (file.type.startsWith('image/')) {
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type === 'video/mp4') {
+                    reader.onload = function(e) {
+                        const video = document.createElement('video');
+                        video.autoplay = true;    // Автопрогравання
+                        video.loop = true;        // Циклічне програвання
+                        video.muted = true;       // Без звуку
+                        const source = document.createElement('source');
+                        source.src = e.target.result;
+                        source.type = 'video/mp4';
+                        video.appendChild(source);
+                        preview.appendChild(video);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.innerHTML = '<p>Unsupported file type. Please upload an image or MP4 video.</p>';
+                }
+            }
+        }
+    
+            document.addEventListener('DOMContentLoaded', function() {
+                const textarea = document.querySelector('.description-field textarea');
+                if (textarea) {
+                    textarea.addEventListener('input', function() {
+                        this.style.height = 'auto';
+                        const lineHeight = parseFloat(getComputedStyle(this).lineHeight) || 24;
+                        const minLines = 1;
+                        const maxLines = 10;
+                        const lines = Math.min(maxLines, Math.max(minLines, Math.ceil(this.scrollHeight / lineHeight)));
+                        this.style.height = (lines * lineHeight) + 'px';
+                    });
+
+                    textarea.dispatchEvent(new Event('input'));
+                }
+            });
+
+            document.getElementById('upload-form').addEventListener('submit', function(e) {
+                const fileInput = document.getElementById('id_file');
+                previewFile(fileInput);
+            });
         </script>
     </div>
 {% endblock %}

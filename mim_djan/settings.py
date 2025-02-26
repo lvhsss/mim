@@ -1,11 +1,13 @@
+# mim_djan/settings.py
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure--nq$ryt)0qu)mvej=f@_vpjs8&-cw43x)x@rprl8kl4wz2gkty'
-DEBUG = True
-ALLOWED_HOSTS = ['fler432v.pythonanywhere.com', '127.0.0.1', 'localhost']
+DEBUG = False
+
+ALLOWED_HOSTS = ['fler432v.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -67,9 +69,15 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_DISCORD_KEY = '1342972978266243158'
 SOCIAL_AUTH_DISCORD_SECRET = 'DmU8TacN5R5PVwyEFmheqODSJG1IaBHr'
 SOCIAL_AUTH_DISCORD_SCOPE = ['identify']
-SOCIAL_AUTH_REDIRECT_URI = 'http://fler432v.pythonanywhere.com/complete/discord/'
+SOCIAL_AUTH_DISCORD_EXTRA_DATA = [
+    ('id', 'id'),
+    ('username', 'username'),
+    ('avatar', 'avatar'),
+]
+SOCIAL_AUTH_REDIRECT_URI = 'https://fler432v.pythonanywhere.com/complete/discord/'
+
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
-LOGIN_URL = '/login/'
+LOGIN_URL = '/login/discord/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 

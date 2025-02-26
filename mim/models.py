@@ -10,7 +10,7 @@ class MIM(models.Model):
     dislikes = models.IntegerField(default=0)
     meme_id = models.AutoField(primary_key=True)
     description = models.TextField(blank=True)
-    avatar = models.URLField(blank=True, null=True)  # URL аватарки з Discord
+    avatar = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return f"by {self.user.username} ({self.meme_id})"
@@ -25,15 +25,15 @@ class LastSubmission(models.Model):
 
 class Vote(models.Model):
     meme = models.ForeignKey(MIM, on_delete=models.CASCADE, related_name='votes')
-    ip_address = models.CharField(max_length=45)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='votes')
     is_like = models.BooleanField()
 
     class Meta:
-        unique_together = ('meme', 'ip_address')
+        unique_together = ('meme', 'user')
 
 class Comment(models.Model):
     meme = models.ForeignKey(MIM, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comments', null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     admin_note = models.TextField(blank=True, null=True)

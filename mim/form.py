@@ -6,7 +6,7 @@ class MIMForm(forms.ModelForm):
         model = MIM
         fields = ['file', 'description']
         widgets = {
-            'description': forms.Textarea(attrs={'placeholder': 'Optional description (max 500 chars)', 'rows': 3, 'maxlength': 500}),
+            'description': forms.Textarea(attrs={'placeholder': 'description (Optional), max 250 chars', 'rows': 1, 'maxlength': 250}),
         }
 
     def clean_file(self):
@@ -23,5 +23,5 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['content']
         widgets = {
-            'content': forms.Textarea(attrs={'placeholder': 'Write your comment here...', 'rows': 4}),
+            'content': forms.TextInput(attrs={'placeholder': 'Write a comment...', 'class': 'comment-input'}),
         }

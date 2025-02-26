@@ -5,20 +5,26 @@
     <div class="page" id="page">
         <div class="loader"></div>
         <header class="header">
+            <img src="../../../static/img/header.png" alt="" class="header-desgn">
             <nav class="nav">
                 <div class="logo-wrap">
                     <a href="{% url 'memes' %}">
                         <img src="{% static 'img/like3.png' %}" alt="" class="logo-head">
-                        <p>Bitcoin Wizards</p>
+                        <p>MIMeme</p>
                     </a>
                 </div>
                 <div class="tabs">
-                    <p><a href="{% url 'memes' %}" style="color: #707070;">New</a></p>
-                    <p><a href="{% url 'top_memes' %}" style="font-weight: bold; color: black;">Top of All Time</a></p>
+                    <p><a href="{% url 'upload_meme' %}" style="font-weight: bold; color: #707070;">Upload</a></p>
+                    <p><a href="{% url 'memes' %}" style="font-weight: bold; color: #707070;">New</a></p>
+                    <p><a href="{% url 'top_memes' %}" style="color: black;">Top of All Time</a></p>
                     <p><a href="{% url 'trending' %}" style="color: #707070;">Trending</a></p>
                 </div>
                 <div class="discord">
-                    <button>Connect Discord</button>
+                    {% if user.is_authenticated %}
+                        <p>{{ user.username }} connected <a href="{% url 'logout' %}">Logout</a></p>
+                    {% else %}
+                        <a href="{% url 'social:begin' 'discord' %}"><button>Connect Discord</button></a>
+                    {% endif %}
                 </div>
             </nav>
         </header>
@@ -88,6 +94,19 @@
                 {% endfor %}
             </div>
         </main>
+        <footer class="footer">
+            <nav class="footer-banners">
+                <div class="join">
+                    <img src="../../../static/img/joinus.png" alt="Join Us" class="joinus">
+                    <img src="../../../static/img/arrow.png" alt="" class="arrow">
+                </div>
+                <div class="socials">
+                    <img src="../../../static/img/x.png" alt="">
+                    <img src="../../../static/img/discord.png" alt="">
+                    <img src="../../../static/img/telegram.png" alt="">
+                </div>
+            </nav>
+        </footer>
     </div>
 
     <script>
