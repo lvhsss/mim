@@ -8,22 +8,22 @@
             <img src="../../../static/img/header.png" alt="" class="header-desgn">
             <nav class="nav">
                 <div class="logo-wrap">
-                    <a href="{% url 'memes' %}">
+                    <a href="{% url 'mim:memes' %}">
                         <img src="{% static 'img/like3.png' %}" alt="" class="logo-head">
                         <p>MIMeme</p>
                     </a>
                 </div>
                 <div class="tabs">
-                    <p><a href="{% url 'upload_meme' %}" style="font-weight: bold; color: #707070;">Upload</a></p>
-                    <p><a href="{% url 'memes' %}" style="font-weight: bold; color: black;">New</a></p>
-                    <p><a href="{% url 'top_memes' %}" style="color: #707070;">Top of All Time</a></p>
-                    <p><a href="{% url 'trending' %}" style="color: #707070;">Trending</a></p>
+                    <p><a href="{% url 'mim:upload_meme' %}" style="font-weight: bold; color: #707070;">Upload</a></p>
+                    <p><a href="{% url 'mim:memes' %}" style="font-weight: bold; color: black;">New</a></p>
+                    <p><a href="{% url 'mim:top_memes' %}" style="color: #707070;">Top of All Time</a></p>
+                    <p><a href="{% url 'mim:trending' %}" style="color: #707070;">Trending</a></p>
                 </div>
                 <div class="discord">
                     {% if user.is_authenticated %}
-                        <p>{{ user.username }} connected <a href="{% url 'logout' %}">Logout</a></p>
+                        <p><a href="{% url 'logout' %}" style="color: white; font-weight: 700;">Logout</a></p>
                     {% else %}
-                        <a href="{% url 'social:begin' 'discord' %}"><button>Connect Discord</button></a>
+                        <a href="{% url 'social:begin' 'discord' %}"><button style="  color: white;">Connect Discord</button></a>
                     {% endif %}
                 </div>
             </nav>
@@ -59,14 +59,14 @@
                                         </div>
                                     {% endif %}
                                     {% if meme.file.name|lower|slice:"-4:" == '.mp4' %}
-                                        <a href="{% url 'meme_detail' meme_id=meme.meme_id %}" class="meme-link">
-                                            <video autoplay loop muted class="mp4 {{ item.format_class }}">
+                                        <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}" class="meme-link">
+                                            <video autoplay loop muted class="mp4 {{ item.format_class }}" loading="lazy">
                                                 <source src="{{ meme.file.url }}" type="video/mp4">
                                             </video>
                                         </a>
                                     {% else %}
-                                        <a href="{% url 'meme_detail' meme_id=meme.meme_id %}" class="meme-link">
-                                            <img src="{{ meme.file.url }}" alt="can't be loaded" class="img {{ item.format_class }}">
+                                        <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}" class="meme-link">
+                                            <img src="{{ meme.file.url }}" alt="can't be loaded" class="img {{ item.format_class }}" loading="lazy">
                                         </a>
                                     {% endif %}
                                     <div class="meme-info">
@@ -77,7 +77,7 @@
                                                     <img src="{{ item.like_icon }}" alt="" class="social like-icon">
                                                     <p>{{ meme.likes }}</p>
                                                 </button>
-                                                <a href="{% url 'meme_detail' meme_id=meme.meme_id %}#comment-form" class="comment-btn social-btn">
+                                                <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}#comment-form" class="comment-btn social-btn">
                                                     <img src="{% static 'img/comment.png' %}" alt="Comment" class="social">
                                                     <p>Comments: {{ item.comment_count }}</p>
                                                 </a>
@@ -103,14 +103,16 @@
         </main>
         <footer class="footer">
             <nav class="footer-banners">
-                <div class="join">
-                    <img src="../../../static/img/joinus.png" alt="Join Us" class="joinus">
-                    <img src="../../../static/img/arrow.png" alt="" class="arrow">
+                <div class="wizard">
+                    <img src="../../../static/img/wizard.png" alt="">
                 </div>
-                <div class="socials">
-                    <img src="../../../static/img/x.png" alt="">
-                    <img src="../../../static/img/discord.png" alt="">
-                    <img src="../../../static/img/telegram.png" alt="">
+                <div class="socials-footer">
+                    <div class="social-footer"><img src="../../../static/img/x.png" alt=""></div>
+                    <div class="social-footer"><img src="../../../static/img/discord.png" alt=""></div>
+                    <div class="social-footer"><img src="../../../static/img/telegram.png" alt=""></div>
+                </div>
+                <div class="joinus">
+                    <img src="../../../static/img/joinus.png" alt="">
                 </div>
             </nav>
         </footer>
@@ -118,27 +120,25 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Логіка для "Show more"
             document.querySelectorAll('.description').forEach(description => {
                 const memeId = description.id.split('-')[1];
                 const showMoreBtn = document.getElementById(`show-more-${memeId}`);
-    
+
                 if (description.scrollHeight > description.clientHeight) {
                     showMoreBtn.style.display = 'block';
                 }
-    
+
                 showMoreBtn.addEventListener('click', function () {
                     if (description.classList.contains('expanded')) {
                         description.classList.remove('expanded');
-                        showMoreBtn.textContent = 'Show more...';
+                        showMoreBtn.textContent = 'show more ..';
                     } else {
                         description.classList.add('expanded');
-                        showMoreBtn.textContent = 'Hide';
+                        showMoreBtn.textContent = 'show less ..';
                     }
                 });
             });
-    
-            // Збереження позиції прокрутки
+
             const currentPage = window.location.pathname;
             if (currentPage.includes("memes")) {
                 const lastMemeId = sessionStorage.getItem('lastViewedMemeIdNew');
@@ -156,7 +156,7 @@
                 }
             }
         });
-    
+
         document.querySelectorAll('.meme-block a').forEach(link => {
             link.addEventListener('click', function () {
                 const memeBlock = this.closest('.meme-block');
@@ -166,7 +166,7 @@
                 sessionStorage.setItem('lastViewedMemeIdNew', memeId);
             });
         });
-    
+
         function getCSRFToken() {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -181,7 +181,7 @@
             }
             return cookieValue;
         }
-    
+
         document.querySelectorAll('.like-btn').forEach(btn => {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -194,11 +194,11 @@
                 const isLiked = this.getAttribute('data-liked') === 'true';
                 const likeIcon = this.querySelector('.like-icon');
                 const likesCount = this.querySelector('p');
-    
+
                 const formData = new FormData();
                 formData.append('meme_id', memeId);
                 formData.append('action', 'like');
-    
+
                 fetch(window.location.pathname, {
                     method: 'POST',
                     body: formData,
@@ -219,11 +219,11 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while liking the meme.');
+                    alert('Please log in with Discord to like memes.');
                 });
             });
         });
-    
+
         document.querySelectorAll('.share-btn').forEach(btn => {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();

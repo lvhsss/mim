@@ -14,6 +14,13 @@ from django.conf import settings
 from django.templatetags.static import static
 from datetime import timedelta
 from django.contrib.auth import logout
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+import logging
+
+# Налаштування логування для дебагу
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def format_memes(memes_list, request):
     memes_with_votes = []
@@ -48,7 +55,11 @@ def format_memes(memes_list, request):
                 else:
                     format_class = 'square'
 
+        # Оновлення коментарів і лайків
         comment_count = Comment.objects.filter(meme=meme).count()
+        likes = meme.likes  # Беремо likes напряму з моделі
+
+        logger.debug(f"Meme {meme.meme_id}: likes={likes}, comment_count={comment_count}")
         memes_with_votes.append({
             'meme': meme,
             'has_voted': has_voted,
@@ -71,10 +82,11 @@ def get_meme_dimensions(file_path):
                 width, height = img.size
         return width, height
     except Exception as e:
-        print(f"Error getting dimensions for {file_path}: {e}")
+        logger.error(f"Error getting dimensions for {file_path}: {e}")
         return 0, 0
 
 @csrf_protect
+@cache_page(60 * 15)    
 def memes(request):
     if request.method == 'POST' and request.user.is_authenticated:
         try:
@@ -104,6 +116,7 @@ def memes(request):
                     return JsonResponse({'success': False, 'error': 'Meme does not exist'}, status=404)
             return HttpResponseBadRequest('Invalid action')
         except Exception as e:
+            logger.error(f"Error in POST request: {e}")
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     elif request.method == 'POST':
         return JsonResponse({'success': False, 'error': 'Please log in with Discord to like memes'}, status=403)
@@ -142,6 +155,7 @@ def top_memes(request):
                     return JsonResponse({'success': False, 'error': 'Meme does not exist'}, status=404)
             return HttpResponseBadRequest('Invalid action')
         except Exception as e:
+            logger.error(f"Error in POST request: {e}")
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     elif request.method == 'POST':
         return JsonResponse({'success': False, 'error': 'Please log in with Discord to like memes'}, status=403)
@@ -180,6 +194,7 @@ def trending_memes(request):
                     return JsonResponse({'success': False, 'error': 'Meme does not exist'}, status=404)
             return HttpResponseBadRequest('Invalid action')
         except Exception as e:
+            logger.error(f"Error in POST request: {e}")
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     elif request.method == 'POST':
         return JsonResponse({'success': False, 'error': 'Please log in with Discord to like memes'}, status=403)
@@ -226,7 +241,7 @@ def upload_meme(request):
             meme.save()
             LastSubmission.objects.all().delete()
             LastSubmission.objects.create()
-            return redirect('memes')
+            return redirect('mim:memes')
     else:
         form = MIMForm()
     
@@ -238,7 +253,9 @@ def upload_meme(request):
     else:
         time_left = 0
     
-    return render(request, 'mim/upload.html', {'form': form, 'time_left': time_left})
+    user_meme_list = MIM.objects.filter(user=request.user).order_by('-uploaded_at') if request.user.is_authenticated else []
+    
+    return render(request, 'mim/upload.html', {'form': form, 'time_left': time_left, 'user_meme_list': user_meme_list})
 
 def meme_detail(request, meme_id):
     meme = MIM.objects.get(meme_id=meme_id)
@@ -292,7 +309,7 @@ def meme_detail(request, meme_id):
                 print(f"Error fetching avatar: {e}")
                 comment.avatar = ''
             comment.save()
-            return redirect('meme_detail', meme_id=meme_id)
+            return redirect('mim:meme_detail', meme_id=meme_id)
     else:
         form = CommentForm()
 
@@ -315,6 +332,6 @@ def discord_logout(request):
                     response = requests.post(revoke_url, data=data)
                     response.raise_for_status()
         except Exception as e:
-            print(f"Ошибка при анулюванні токена: {e}")
+            print(f"an error occured {e}")
         logout(request)
     return redirect('/')

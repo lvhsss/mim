@@ -65,3 +65,133 @@ input[type="file"] {
     font-size: 16px;
     width: 100%;
 }
+/* ------------------------- */
+.upload-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row; 
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-bottom: 100px;
+}
+.footer {
+    margin-top: 100px;
+}
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10%;
+    position: relative;
+    height: 100%;
+}
+.gallery-item {
+    width: 120px;
+    height: 120px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    position: relative;
+}
+.user-gallery {
+    flex: 1;
+    padding: 15px;
+}
+.gallery-image, .gallery-video {
+    max-width: 100%;
+    max-height: 120px !important;
+}
+.upload-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.drop-zone {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+.drop-zone-icon {
+    width: 100px;
+    height: 100px;
+}
+.description-field {
+    margin-top: 50px;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.description-field textarea {
+    width: 150px;
+    height: 50px !important;
+    resize: none;
+}
+.submit-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.submit-button {
+    width: 100px;
+    height: 50px;
+    border: none;
+    cursor: pointer;
+    margin: 0 auto;
+}
+.submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+/* ----- */
+.upload-link {
+    width: 130px;
+    height: auto;
+    position: relative;
+}
+
+.meme-info-stats {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    font-size: 12px;
+}
+
+.meme-info-stats .like-stats,
+.meme-info-stats .comment-stats {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40%;
+}
+.text-1 {
+    color: #afafaf;
+    font-size: 35px;
+    font-weight: 800;
+}
+.text-2 {
+    color: #afafaf;
+    font-size: 35px;
+    font-weight: 800;
+}

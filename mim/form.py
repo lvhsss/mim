@@ -6,7 +6,7 @@ class MIMForm(forms.ModelForm):
         model = MIM
         fields = ['file', 'description']
         widgets = {
-            'description': forms.Textarea(attrs={'placeholder': 'description (Optional), max 250 chars', 'rows': 1, 'maxlength': 250}),
+            'description': forms.Textarea(attrs={'placeholder': 'description (Optional)', 'rows': 1, 'maxlength': 250}),
         }
 
     def clean_file(self):
