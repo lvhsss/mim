@@ -4,6 +4,7 @@
 {% block content %}
     <div class="page" id="page">
         <div class="loader"></div>
+        <div class="burger" style="display: none;"></div>
         <header class="header">
             <img src="../../../static/img/header.png" alt="" class="header-desgn">
             <nav class="nav">
@@ -13,18 +14,23 @@
                         <p>MIMeme</p>
                     </a>
                 </div>
-                <div class="tabs">
-                    <p><a href="{% url 'mim:upload_meme' %}" style="font-weight: bold; color: #707070;">Upload</a></p>
-                    <p><a href="{% url 'mim:memes' %}" style="font-weight: bold; color: black;">New</a></p>
-                    <p><a href="{% url 'mim:top_memes' %}" style="color: #707070;">Top of All Time</a></p>
-                    <p><a href="{% url 'mim:trending' %}" style="color: #707070;">Trending</a></p>
+                <div class="tabs-brg">
+                    <div class="tabs">
+                        <p><a href="{% url 'mim:upload_meme' %}" style="font-weight: bold; color: #707070;">Upload</a></p>
+                        <p><a href="{% url 'mim:memes' %}" style="font-weight: bold; color: black;">New</a></p>
+                        <p><a href="{% url 'mim:top_memes' %}" style="color: #707070;">Top of All Time</a></p>
+                        <p><a href="{% url 'mim:trending' %}" style="color: #707070;">Trending</a></p>
+                    </div>
                 </div>
                 <div class="discord">
                     {% if user.is_authenticated %}
                         <p><a href="{% url 'logout' %}" style="color: white; font-weight: 700;">Logout</a></p>
                     {% else %}
-                        <a href="{% url 'social:begin' 'discord' %}"><button style="  color: white;">Connect Discord</button></a>
+                        <a href="{% url 'social:begin' 'discord' %}"><button style="color: white;">Connect Discord</button></a>
                     {% endif %}
+                </div>
+                <div class="burger-menu">
+                    <span></span>
                 </div>
             </nav>
         </header>
@@ -40,7 +46,7 @@
                                             {% if meme.avatar %}
                                                 <img src="{{ meme.avatar }}" alt="" style="width: 50px; height: 50px; border-radius: 50%;">
                                             {% else %}
-                                                <img src="{% static 'img/like3.png' %}" alt="">
+                                                <img src="{% static 'img/like3.png' %}" alt="" style="width: 50px; height: 50px; border-radius: 50%;">
                                             {% endif %}
                                         </div>
                                         <div class="name">
@@ -48,7 +54,7 @@
                                         </div>
                                     </div>
                                     <div class="id">
-                                        <p>{{ meme.uploaded_at }}</p>
+                                        <p>{{ meme.uploaded_at|date:"F d, Y, g:i a" }}</p>
                                     </div>
                                 </div>
                                 <div class="profile-body">
@@ -62,11 +68,12 @@
                                         <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}" class="meme-link">
                                             <video autoplay loop muted class="mp4 {{ item.format_class }}" loading="lazy">
                                                 <source src="{{ meme.file.url }}" type="video/mp4">
+                                                Your browser does not support the video tag.
                                             </video>
                                         </a>
                                     {% else %}
                                         <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}" class="meme-link">
-                                            <img src="{{ meme.file.url }}" alt="can't be loaded" class="img {{ item.format_class }}" loading="lazy">
+                                            <img src="{{ meme.file.url }}" alt="{{ meme.description|default:'Meme' }}" class="img {{ item.format_class }}" loading="lazy" onerror="this.src='{% static 'img/default.png' %}'; this.alt='Image failed to load';">
                                         </a>
                                     {% endif %}
                                     <div class="meme-info">
@@ -77,9 +84,9 @@
                                                     <img src="{{ item.like_icon }}" alt="" class="social like-icon">
                                                     <p>{{ meme.likes }}</p>
                                                 </button>
-                                                <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}#comment-form" class="comment-btn social-btn">
+                                                <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}" class="comment-btn social-btn">
                                                     <img src="{% static 'img/comment.png' %}" alt="Comment" class="social">
-                                                    <p>Comments: {{ item.comment_count }}</p>
+                                                    <p>{{ item.comment_count }}</p>
                                                 </a>
                                             </div>
                                             <div class="social-2">
@@ -107,14 +114,17 @@
                     <img src="../../../static/img/wizard.png" alt="">
                 </div>
                 <div class="socials-footer">
-                    <div class="social-footer"><img src="../../../static/img/x.png" alt=""></div>
-                    <div class="social-footer"><img src="../../../static/img/discord.png" alt=""></div>
-                    <div class="social-footer"><img src="../../../static/img/telegram.png" alt=""></div>
+                    <div class="social-footer"><a href='https://x.com/bitcoinwizardry?s=21' target='_blank'><img src="{% static 'img/x.png' %}" alt=""></a></div>
+                    <div class="social-footer"><a href='https://discord.gg/bitcoinwizard' target='_blank'><img src="{% static 'img/discord.png' %}" alt=""></a></div>
+                    <div class="social-footer"><a href='https://t.me/bitcoinwizardry' ><img src="{% static 'img/telegram.png' %}" alt=""></a></div>
                 </div>
                 <div class="joinus">
-                    <img src="../../../static/img/joinus.png" alt="">
+                    <img src="{% static 'img/joinus.png' %}" alt="">
                 </div>
             </nav>
+            <div class="footer-img">
+                <img src="{% static 'img/header.png' %}" class="footer-bg">
+            </div>
         </footer>
     </div>
 
@@ -183,6 +193,14 @@
         }
 
         document.querySelectorAll('.like-btn').forEach(btn => {
+            const memeId = btn.closest('.social-form').getAttribute('data-meme-id');
+            const isLiked = btn.getAttribute('data-liked') === 'true';
+            const likeIcon = btn.querySelector('.like-icon');
+            const likesCount = btn.querySelector('p');
+            // Ніяких змін тут, просто ініціалізація
+        });
+
+        document.querySelectorAll('.like-btn').forEach(btn => {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 const isAuthenticated = '{{ user.is_authenticated|default:"false" | lower }}' === "true";
@@ -211,8 +229,8 @@
                 .then(data => {
                     if (data.success) {
                         likesCount.textContent = data.likes;
-                        likeIcon.src = isLiked ? "{% static 'img/like.png' %}" : "{% static 'img/like2.png' %}";
-                        this.setAttribute('data-liked', isLiked ? 'false' : 'true');
+                        likeIcon.src = data.has_voted ? "{% static 'img/like2.png' %}" : "{% static 'img/like.png' %}";
+                        this.setAttribute('data-liked', data.has_voted.toString());
                     } else {
                         alert(data.error || 'Failed to like meme.');
                     }
@@ -250,4 +268,6 @@
             });
         });
     </script>
+</script>
 {% endblock %}
+

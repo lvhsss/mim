@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from .form import MIMForm, CommentForm
 from .models import MIM, LastSubmission, Vote, Comment
 from PIL import Image
-import requests
 import cv2
 import os
 from django.db.models import Count, Q
@@ -17,10 +16,28 @@ from django.contrib.auth import logout
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 import logging
+import requests
 
-# Налаштування логування для дебагу
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+def get_meme_dimensions(file_path):
+    try:
+        if file_path.lower().endswith('.mp4'):
+            cap = cv2.VideoCapture(file_path)
+            if not cap.isOpened():
+                logger.error(f"Cannot open video file: {file_path}")
+                return 0, 0
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            cap.release()
+        else:
+            with Image.open(file_path) as img:
+                width, height = img.size
+        return width, height
+    except Exception as e:
+        logger.error(f"Error getting dimensions for {file_path}: {e}")
+        return 0, 0
 
 def format_memes(memes_list, request):
     memes_with_votes = []
@@ -33,6 +50,8 @@ def format_memes(memes_list, request):
         file_path = meme.file.path
         is_video = meme.file.name.lower().endswith('.mp4')
         width, height = get_meme_dimensions(file_path) if os.path.exists(file_path) else (0, 0)
+        if not os.path.exists(file_path):
+            logger.error(f"File not found: {file_path}")
 
         format_class = 'square'
         area = width * height
@@ -55,11 +74,10 @@ def format_memes(memes_list, request):
                 else:
                     format_class = 'square'
 
-        # Оновлення коментарів і лайків
         comment_count = Comment.objects.filter(meme=meme).count()
-        likes = meme.likes  # Беремо likes напряму з моделі
+        likes = meme.likes
 
-        logger.debug(f"Meme {meme.meme_id}: likes={likes}, comment_count={comment_count}")
+        logger.debug(f"Meme {meme.meme_id}: likes={likes}, comment_count={comment_count}, file_path={file_path}")
         memes_with_votes.append({
             'meme': meme,
             'has_voted': has_voted,
@@ -69,21 +87,6 @@ def format_memes(memes_list, request):
             'comment_count': comment_count
         })
     return memes_with_votes
-
-def get_meme_dimensions(file_path):
-    try:
-        if file_path.lower().endswith('.mp4'):
-            cap = cv2.VideoCapture(file_path)
-            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-            cap.release()
-        else:
-            with Image.open(file_path) as img:
-                width, height = img.size
-        return width, height
-    except Exception as e:
-        logger.error(f"Error getting dimensions for {file_path}: {e}")
-        return 0, 0
 
 @csrf_protect
 @cache_page(60 * 15)    
@@ -110,8 +113,8 @@ def memes(request):
                         meme.likes += 1
                         Vote.objects.create(meme=meme, user=request.user, is_like=True)
                     meme.save()
-
-                    return JsonResponse({'success': True, 'likes': meme.likes})
+                    has_voted = Vote.objects.filter(meme=meme, user=request.user, is_like=True).exists()
+                    return JsonResponse({'success': True, 'likes': meme.likes, 'has_voted': has_voted})
                 except MIM.DoesNotExist:
                     return JsonResponse({'success': False, 'error': 'Meme does not exist'}, status=404)
             return HttpResponseBadRequest('Invalid action')
@@ -149,8 +152,8 @@ def top_memes(request):
                         meme.likes += 1
                         Vote.objects.create(meme=meme, user=request.user, is_like=True)
                     meme.save()
-
-                    return JsonResponse({'success': True, 'likes': meme.likes})
+                    has_voted = Vote.objects.filter(meme=meme, user=request.user, is_like=True).exists()
+                    return JsonResponse({'success': True, 'likes': meme.likes, 'has_voted': has_voted})
                 except MIM.DoesNotExist:
                     return JsonResponse({'success': False, 'error': 'Meme does not exist'}, status=404)
             return HttpResponseBadRequest('Invalid action')
@@ -188,8 +191,8 @@ def trending_memes(request):
                         meme.likes += 1
                         Vote.objects.create(meme=meme, user=request.user, is_like=True)
                     meme.save()
-
-                    return JsonResponse({'success': True, 'likes': meme.likes})
+                    has_voted = Vote.objects.filter(meme=meme, user=request.user, is_like=True).exists()
+                    return JsonResponse({'success': True, 'likes': meme.likes, 'has_voted': has_voted})
                 except MIM.DoesNotExist:
                     return JsonResponse({'success': False, 'error': 'Meme does not exist'}, status=404)
             return HttpResponseBadRequest('Invalid action')
@@ -238,13 +241,22 @@ def upload_meme(request):
             except Exception as e:
                 print(f"Error fetching avatar: {e}")
                 meme.avatar = ''
-            meme.save()
-            LastSubmission.objects.all().delete()
-            LastSubmission.objects.create()
-            return redirect('mim:memes')
+            meme.description = request.POST.get('description', '')
+            try:
+                meme.save()
+                print("Meme saved successfully")
+                LastSubmission.objects.all().delete()
+                LastSubmission.objects.create()
+            except Exception as e:
+                print(f"Error saving meme: {e}")
+                return JsonResponse({'success': False, 'error': f'Failed to save meme: {str(e)}'})
+            return JsonResponse({'success': True, 'message': 'File uploaded successfully'})
+        else:
+            print(f"Form errors: {form.errors}")
+            return JsonResponse({'success': False, 'error': form.errors})
     else:
         form = MIMForm()
-    
+
     last_submit = LastSubmission.objects.first()
     cooldown = 1 * 5
     if last_submit:
@@ -252,10 +264,18 @@ def upload_meme(request):
         time_left = max(0, int(time_left))
     else:
         time_left = 0
-    
+
     user_meme_list = MIM.objects.filter(user=request.user).order_by('-uploaded_at') if request.user.is_authenticated else []
-    
-    return render(request, 'mim/upload.html', {'form': form, 'time_left': time_left, 'user_meme_list': user_meme_list})
+    user_meme_count = user_meme_list.count() if user_meme_list else 0
+    has_discord_account = request.user.social_auth.filter(provider='discord').exists()
+
+    return render(request, 'mim/upload.html', {
+        'form': form,
+        'time_left': time_left,
+        'user_meme_list': user_meme_list,
+        'user_meme_count': user_meme_count,
+        'has_discord_account': has_discord_account
+    })
 
 def meme_detail(request, meme_id):
     meme = MIM.objects.get(meme_id=meme_id)

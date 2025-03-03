@@ -22,7 +22,6 @@
                     <div class="meme-info">
                         <div class="info-static">
                             <div class="info-author">
-                                <!-- <p class="static-logo">{{ meme.avatar }}</p> -->
                                 <p class="static-author">{{ meme.user.username }}</p>
                                 <p class="static-time">{{ meme.uploaded_at }}</p>
                             </div>
@@ -43,21 +42,23 @@
                             <p>Please <a href="{% url 'social:begin' 'discord' %}">login with Discord</a> to comment.</p>
                         {% endif %}
                         </div>
-                        {% for comment in comments %}
-                            <p class="comment-text">
-                                {% if comment.avatar %}
-                                    <img src="{{ comment.avatar }}" alt="" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
-                                {% else %}
-                                    <img src="{% static 'img/like3.png' %}" alt="" style="width: 30px; height: 30px; vertical-align: middle;">
+                        <div class="comments">
+                            {% for comment in comments %}
+                                <p class="comment-text">
+                                    {% if comment.avatar %}
+                                        <img src="{{ comment.avatar }}" alt="" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
+                                    {% else %}
+                                        <img src="{% static 'img/like3.png' %}" alt="" style="width: 30px; height: 30px; vertical-align: middle;">
+                                    {% endif %}
+                                    <strong>{{ comment.user.username }}</strong> {{ comment.content }}
+                                </p>
+                                {% if comment.admin_note %}
+                                    <p style="color: red; margin-left: 15px; font-size: 12px;">* {{ comment.admin_note }}</p>
                                 {% endif %}
-                                <strong>{{ comment.user.username }}</strong> {{ comment.content }}
-                            </p>
-                            {% if comment.admin_note %}
-                                <p style="color: red; margin-left: 15px; font-size: 12px;">* {{ comment.admin_note }}</p>
-                            {% endif %}
-                        {% empty %}
-                            <p>No comments yet.</p>
-                        {% endfor %}
+                            {% empty %}
+                                <p>No comments yet.</p>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>

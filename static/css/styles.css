@@ -36,6 +36,7 @@ body {
   scroll-behavior: smooth;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
+  color: black;
 }
 html,
 body {
@@ -92,6 +93,9 @@ a {
   min-height: 100vh;
   position: relative;
 }
+.submit-button {
+    color: black;
+}
 .header {
     height: 70px;
     display: flex;
@@ -112,27 +116,19 @@ a {
   position: relative;
   color: white;
 }
+.discord p {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  align-content: center;
+}
 .footer {
   height: 150px;
   width: 100%;
   align-items: center;
   display: flex;
-  padding: 0 100px;
+  padding: 0 15px;
     position: relative;
-    overflow: hidden;
-}
-footer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('../img/header.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    transform: rotate(180deg);
-    z-index: -1;
 }
 .footer-desgn {
     position: absolute;
@@ -156,6 +152,7 @@ footer::after {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  z-index: 1000;
 }
 .social-footer {
   width: 200px;
@@ -169,27 +166,29 @@ footer::after {
   align-items: center;
   justify-content: center;
   margin-top: 20px;
+  z-index: 1000;
+}
+.social-footer a {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 .social-footer img {
   width: 50px;
   height: 50px;
 }
 .joinus {
-  max-width: 250px;
+  width: 300px;
 }
 .wizard{
-  max-height: 99%;
+  height: 100%;
+  max-width: 550px;
 }
-.socials {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 50px;
-}
-.socials img {
-  max-width: 50px;
-  max-height: 500px;
+.wizard img {
+  width: 550px;
 }
 .nav {
   position: relative;
@@ -254,7 +253,7 @@ footer::after {
   overflow: visible;
   position: relative;
   border: 20px solid transparent;
-  border-image: url('../img/meme-frame-3.png') 71 69 72 72 stretch stretch; 
+  border-image: url('../img/meme-frame-3.png') 71 69 72 72 stretch stretch;
 }
 .meme-link video, .meme-link img {
   width: 100%;
@@ -386,7 +385,7 @@ footer::after {
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 0px;
 }
 
 ::-webkit-scrollbar-track {
@@ -394,10 +393,7 @@ footer::after {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-image: url('../img/pill.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  border-radius: 6px;
+  background-color: transparent;
 }
 .wide-low {
   max-height: 150px;
@@ -409,7 +405,7 @@ footer::after {
   max-width: 500px;
 }
 #loader {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -437,19 +433,6 @@ footer::after {
 body.loaded {
   transition: none;
 }
-
-.mim-detail-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  height: 100%;
-  margin: 0 auto;
-  padding: 20px;
-}
-
 .mim-info-mp4, .mim-info-img {
   display: flex;
   justify-content: center;
@@ -458,25 +441,25 @@ body.loaded {
 
 .mim-info-mp4.vertical-video, .mim-info-img.vertical-image {
   max-width: 1000px;
-  height: auto;
+  height: 100%;
   object-fit: contain;
 }
 
 .mim-info-mp4.horizontal-video, .mim-info-img.horizontal-image {
   max-width: 1400px;
-  height: auto;
+  height: 100%;
   object-fit: contain;
 }
 
 .mim-info-mp4.square-video, .mim-info-img.square {
   max-width: 1200px;
-  height: auto;
+  height: 100%;
   object-fit: contain;
 }
 
 .mim-info-img.wide-low {
   max-width: 1200px;
-  height: auto;
+  height: 100%;
   object-fit: contain;
 } */
 .mp4, .img {

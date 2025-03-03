@@ -4,7 +4,6 @@
   font-weight: normal;
   font-style: normal;
 }
-
 *,
 *::before,
 *::after {
@@ -37,8 +36,9 @@ body {
   scroll-behavior: smooth;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
+  color: black;
 }
-html, 
+html,
 body {
   height: 100%;
 }
@@ -93,12 +93,16 @@ a {
   min-height: 100vh;
   position: relative;
 }
+.submit-button {
+    color: black;
+}
 .header {
     height: 70px;
     display: flex;
     width: 100%;
     align-items: center;
     position: relative;
+    font-size: 20px;
 }
 .header-desgn {
   position: absolute;
@@ -112,50 +116,79 @@ a {
   position: relative;
   color: white;
 }
-.discord-bg {
-  position: absolute;
-  left: 0;
-  top: 0;
-  max-width: 100%;
-  z-index: -1;
+.discord p {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  align-content: center;
 }
 .footer {
-  height: 125px;
+  height: 150px;
   width: 100%;
   align-items: center;
   display: flex;
-  padding: 0 100px;
+  padding: 0 15px;
+    position: relative;
+}
+.footer-desgn {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 30%;
+    z-index: -1;
+    transform: rotate(180deg);
 }
 .footer-banners {
   display: flex;
+  flex-direction: row;
   width: 100%;
   height: 100%;
   align-items: center;
   justify-content: center;
-  gap: 100px;
 }
-.join {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 50px;
-}
-.joinus {
-  max-width: 300px;
-}
-.arrow {
-  max-width: 100px;
-}
-.socials {
+.socials-footer {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 50px;
+  z-index: 1000;
 }
-.socials img {
-  max-width: 50px;
-  max-height: 500px;
+.social-footer {
+  width: 200px;
+  height: 80px;
+  background-image: url('../img/socials-footer.png');
+  background-size: contain;
+  background-position: center;
+  background-clip: border-box;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  z-index: 1000;
+}
+.social-footer a {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.social-footer img {
+  width: 50px;
+  height: 50px;
+}
+.joinus {
+  width: 300px;
+}
+.wizard{
+  height: 100%;
+  max-width: 550px;
+}
+.wizard img {
+  width: 550px;
 }
 .nav {
   position: relative;
@@ -192,23 +225,42 @@ a {
 .discord {
   left: 0;
   top: 0;
-  height: 100%;
+  height: 80px;
+  width: 180px;
   display: flex;
-  justify-content: end;
+  justify-content: center;
   align-items: center;
-  padding: 0 30px;
   z-index: 1000;
+  background-image: url('../img/discord-bg.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-clip: border-box;
+  overflow: hidden;
+}
+.discord a {
+  width: 100%;
+  text-wrap: nowrap;
+  text-align: center;
+}
+.discord:hover, .discord a button:hover{
+  cursor: pointer;
 }
 .meme-link {
   display: block;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  border: 20px solid transparent;
+  border-image: url('../img/meme-frame-3.png') 71 69 72 72 stretch stretch;
 }
 .meme-link video, .meme-link img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-height: 400px;
+  object-fit: contain;
+  position: relative;
+  z-index: 0;
 }
 .meme-grid {
   position: relative;
@@ -262,8 +314,9 @@ a {
   white-space: pre-wrap;
   margin: 0;
   transition: max-height 0.3s ease;
+  font-style: normal;
 }
-.description:not(.expanded)::after {
+.description-main:not(.expanded)::after {
   content: '';
   position: absolute;
   top: 2em;
@@ -290,8 +343,37 @@ a {
   position: relative;
 }
 .logo {
-  max-width: 50px;
-  max-height: 50px;
+  width: 50px;
+  height: 50px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo::after {
+  content: '';
+  position: absolute;
+  align-self: center;
+  justify-self: center;
+  width: 60px;
+  height: 60px;
+  background-image: url('../img/avatar-frame.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  position: relative;
+  z-index: 0;
 }
 .name {
   font-size: 1.2rem;
@@ -301,19 +383,18 @@ a {
   color: gray;
   font-size: 0.8rem;
 }
-.mp4, .img {
-  object-fit: fill;
-}
-.vertical-video, .vertical-image {
-  max-height: 800px;
-  max-width: 400px;
+
+::-webkit-scrollbar {
+  width: 0px;
 }
 
-.horizontal-video, .horizontal-image {
-  max-height: 200px;
-  max-width: 400px;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
 .wide-low {
   max-height: 150px;
   max-width: 300px;
@@ -324,7 +405,7 @@ a {
   max-width: 500px;
 }
 #loader {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -334,6 +415,7 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
 #loader video {
@@ -351,19 +433,6 @@ a {
 body.loaded {
   transition: none;
 }
-
-.mim-detail-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  height: 100%;
-  margin: 0 auto;
-  padding: 20px;
-}
-
 .mim-info-mp4, .mim-info-img {
   display: flex;
   justify-content: center;
@@ -371,38 +440,36 @@ body.loaded {
 }
 
 .mim-info-mp4.vertical-video, .mim-info-img.vertical-image {
-  max-height: 1400px;
   max-width: 1000px;
+  height: 100%;
+  object-fit: contain;
 }
 
 .mim-info-mp4.horizontal-video, .mim-info-img.horizontal-image {
-  max-height: 1000px;
   max-width: 1400px;
+  height: 100%;
+  object-fit: contain;
 }
 
 .mim-info-mp4.square-video, .mim-info-img.square {
-  max-height: 1200px;
   max-width: 1200px;
+  height: 100%;
+  object-fit: contain;
 }
 
 .mim-info-img.wide-low {
-  max-height: 900px;
   max-width: 1200px;
+  height: 100%;
+  object-fit: contain;
+} */
+.mp4, .img {
+  object-fit: contain;
 }
-
 .meme-info {
   flex: 0 0 50%;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
   text-align: left;
-}
-
-.mp4, .img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 .main.mim-info {
   display: block;
@@ -424,6 +491,12 @@ button {
   flex-direction: row;
   align-items: center;
   gap: 5px;
+}
+.like-btn:hover {
+  cursor: pointer;
+}
+.share-btn:hover {
+  cursor: pointer;
 }
 .social-btn {
   transition: 0.4s ease;
