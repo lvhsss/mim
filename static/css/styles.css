@@ -505,6 +505,20 @@ button {
   transition: 0.2s ease;
   transform: scale(1.1);
 }
+.tabs p {
+    transition: 0.2s ease;
+}
+.tabs p:hover {
+    transition: 0.2s ease;
+    transform: scale(1.1);
+}
+.social-footer {
+    transition: 0.2s ease;
+}
+.social-footer:hover {
+    transition: 0.2s ease;
+    transform: scale(1.1);
+}
 .social-form {
   display: flex;
   flex-direction: row;

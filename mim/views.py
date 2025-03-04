@@ -236,7 +236,7 @@ def upload_meme(request):
                     else:
                         meme.avatar = ''
                 else:
-                    print("No Discord social auth found for user")
+                    print("No Discord social authfound for user")
                     meme.avatar = ''
             except Exception as e:
                 print(f"Error fetching avatar: {e}")

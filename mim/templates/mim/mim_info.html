@@ -50,7 +50,7 @@
                                     {% else %}
                                         <img src="{% static 'img/like3.png' %}" alt="" style="width: 30px; height: 30px; vertical-align: middle;">
                                     {% endif %}
-                                    <strong>{{ comment.user.username }}</strong> {{ comment.content }}
+                                    <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
                                 </p>
                                 {% if comment.admin_note %}
                                     <p style="color: red; margin-left: 15px; font-size: 12px;">* {{ comment.admin_note }}</p>

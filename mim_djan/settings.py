@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure--nq$ryt)0qu)mvej=f@_vpjs8&-cw43x)x@rprl8kl4wz2gkty' # Згенеруй локальний ключ
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['fler432v.pythonanywhere.com', '127.0.0.1']
 

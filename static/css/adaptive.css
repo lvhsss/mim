@@ -12,6 +12,9 @@ body._lock {
 .page {
     overflow: hidden;
 }
+.text {
+    pointer-events: none;
+}
 @media (max-width: 426px) {
     .header {
         font-size: 14px;
