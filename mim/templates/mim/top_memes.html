@@ -65,13 +65,13 @@
                                     {% endif %}
                                     {% if meme.file.name|lower|slice:"-4:" == '.mp4' %}
                                         <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}" class="meme-link">
-                                            <video autoplay loop muted class="mp4 {{ item.format_class }}">
+                                            <video autoplay loop muted class="mp4 {{ item.format_class }}" loading="lazy">
                                                 <source src="{{ meme.file.url }}" type="video/mp4">
                                             </video>
                                         </a>
                                     {% else %}
                                         <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}" class="meme-link">
-                                            <img src="{{ meme.file.url }}" alt="can't be loaded" class="img {{ item.format_class }}">
+                                            <img src="{{ meme.file.url }}" alt="can't be loaded" class="img {{ item.format_class }}" loading="lazy">
                                         </a>
                                     {% endif %}
                                     <div class="meme-info">
