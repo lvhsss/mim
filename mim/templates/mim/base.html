@@ -22,7 +22,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="../../../static/img/favicon/favicon-16x16.png">
     <link rel="manifest" href="../../../static/img/favicon/site.webmanifest">
 
-    <script defer src="{% static 'js/script.js' %}"></script>
 </head>
 <body>
     <div id="loader">
@@ -33,5 +32,6 @@
     </div>
     {% block content %}
     {% endblock %}
+    <script defer src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

@@ -89,9 +89,9 @@ def format_memes(memes_list, request):
     return memes_with_votes
 
 @csrf_protect
-@cache_page(60 * 15)    
 def memes(request):
     if request.method == 'POST' and request.user.is_authenticated:
+        print(f"POST request for meme_id: {request.POST.get('meme_id')}, action: {request.POST.get('action')}")  # Дебаг
         try:
             meme_id = request.POST.get('meme_id')
             action = request.POST.get('action')
@@ -114,6 +114,7 @@ def memes(request):
                         Vote.objects.create(meme=meme, user=request.user, is_like=True)
                     meme.save()
                     has_voted = Vote.objects.filter(meme=meme, user=request.user, is_like=True).exists()
+                    print(f"Like processed: likes={meme.likes}, has_voted={has_voted}")  # Дебаг
                     return JsonResponse({'success': True, 'likes': meme.likes, 'has_voted': has_voted})
                 except MIM.DoesNotExist:
                     return JsonResponse({'success': False, 'error': 'Meme does not exist'}, status=404)
