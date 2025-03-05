@@ -21,6 +21,12 @@ import requests
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+from django.views.decorators.http import require_GET
+
+@require_GET
+def check_auth(request):
+    return JsonResponse({'is_authenticated': request.user.is_authenticated})
+
 def get_meme_dimensions(file_path):
     try:
         if file_path.lower().endswith('.mp4'):
@@ -107,13 +113,14 @@ def memes(request):
                     if vote and vote.is_like:
                         meme.likes -= 1
                         vote.delete()
+                        has_voted = False
                     else:
                         if vote:
                             vote.delete()
                         meme.likes += 1
                         Vote.objects.create(meme=meme, user=request.user, is_like=True)
+                        has_voted = True
                     meme.save()
-                    has_voted = Vote.objects.filter(meme=meme, user=request.user, is_like=True).exists()
                     print(f"Like processed: likes={meme.likes}, has_voted={has_voted}")  # Дебаг
                     return JsonResponse({'success': True, 'likes': meme.likes, 'has_voted': has_voted})
                 except MIM.DoesNotExist:
@@ -352,7 +359,13 @@ def discord_logout(request):
                     }
                     response = requests.post(revoke_url, data=data)
                     response.raise_for_status()
+                    print("Discord token revoked successfully")
         except Exception as e:
-            print(f"an error occured {e}")
+            print(f"Error revoking Discord token: {e}")
         logout(request)
+        response = redirect('/')
+        response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
     return redirect('/')

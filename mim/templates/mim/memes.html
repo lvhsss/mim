@@ -4,35 +4,6 @@
 {% block content %}
     <div class="page" id="page">
         <div class="loader"></div>
-        <header class="header">
-            <img src="{% static 'img/header.png' %}" alt="" class="header-desgn">
-            <nav class="nav">
-                <div class="logo-wrap">
-                    <a href="{% url 'mim:memes' %}">
-                        <img src="{% static 'img/like3.png' %}" alt="" class="logo-head">
-                        <p>MIMeme</p>
-                    </a>
-                </div>
-                <div class="tabs-brg">
-                    <div class="tabs">
-                        <p><a href="{% url 'mim:upload_meme' %}" style="font-weight: bold; color: #707070;">Upload</a></p>
-                        <p><a href="{% url 'mim:memes' %}" style="font-weight: bold; color: black;">New</a></p>
-                        <p><a href="{% url 'mim:top_memes' %}" style="color: #707070;">Top of All Time</a></p>
-                        <p><a href="{% url 'mim:trending' %}" style="color: #707070;">Trending</a></p>
-                    </div>
-                </div>
-                <div class="discord">
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'logout' %}"><button style="color: white;">Logout</button></a>
-                    {% else %}
-                        <p><a href="{% url 'social:begin' 'discord' %}" style="color: white; font-weight: 700;">Connect Discord</a></p>
-                    {% endif %}
-                </div>
-                <div class="burger-menu">
-                    <span></span>
-                </div>
-            </nav>
-        </header>
         <main class="main">
             <div class="meme-grid">
                 {% for item in memes_with_votes %}
@@ -72,7 +43,7 @@
                                         </a>
                                     {% else %}
                                         <a href="{% url 'mim:meme_detail' meme_id=meme.meme_id %}" class="meme-link">
-                                            <img data-src="{{ meme_data.meme.file.url }}" src="{{ meme.file.url }}" alt="{{ meme.description|default:'Meme' }}" class="img {{ item.format_class }} lazy"  this.alt='Image failed to load';">
+                                            <img data-src="{{ meme_data.meme.file.url }}" src="{{ meme.file.url }}" alt="{{ meme.description|default:'Meme' }}" class="img {{ item.format_class }} lazy"  this.alt='Image failed to load';>
                                         </a>
                                     {% endif %}
                                     <div class="meme-info">

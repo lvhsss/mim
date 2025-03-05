@@ -4,35 +4,6 @@
 {% block content %}
     <div class="page" id="page">
         <div class="loader"></div>
-        <header class="header">
-            <img src="../../../static/img/header.png" alt="" class="header-desgn">
-            <nav class="nav">
-                <div class="logo-wrap">
-                    <a href="{% url 'mim:memes' %}">
-                        <img src="{% static 'img/like3.png' %}" alt="" class="logo-head">
-                        <p>MIMeme</p>
-                    </a>
-                </div>
-                <div class="tabs-brg">
-                    <div class="tabs">
-                        <p><a href="{% url 'mim:upload_meme' %}" style="font-weight: bold; color: #707070;">Upload</a></p>
-                        <p><a href="{% url 'mim:memes' %}" style="font-weight: bold; color: #707070;">New</a></p>
-                        <p><a href="{% url 'mim:top_memes' %}" style="color: #707070;">Top of All Time</a></p>
-                        <p><a href="{% url 'mim:trending' %}" style="color: black;">Trending</a></p>
-                    </div>
-                </div>
-                <div class="discord">
-                    {% if user.is_authenticated %}
-                        <p><a href="{% url 'logout' %}" style="color: white; font-weight: 700;">Logout</a></p>
-                    {% else %}
-                        <a href="{% url 'social:begin' 'discord' %}"><button style="  color: white;">Connect Discord</button></a>
-                    {% endif %}
-                </div>
-                <div class="burger-menu">
-                    <span></span>
-                </div>
-            </nav>
-        </header>
         <main class="main">
             <div class="meme-grid">
                 {% for item in memes_with_votes %}
