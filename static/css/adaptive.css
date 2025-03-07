@@ -98,8 +98,15 @@ body._lock {
         justify-content: center;
     }
     .burger-menu._active::after {
-        transform: translate(50%,0);
-        bottom: 0%;
+        transform: rotate(-45deg);
+        bottom: 45%;
+    }
+    .burger-menu._active::before {
+        transform: rotate(45deg);
+        top: 30%;
+    }
+    .burger-menu._active span {
+        opacity: 0;
     }
     .tabs-brg {
         position: fixed;
@@ -172,7 +179,7 @@ body._lock {
 }
 @media (max-width: 426px) {
     .meme-grid {
-        max-width: 100%;
+        max-width: 100% !important;
         padding: 0 15px;
         margin-bottom: 0;
     }
@@ -209,7 +216,7 @@ body._lock {
 }
 @media (max-width: 769px) {
     .upload-container {
-        flex-direction: column-reverse;
+        flex-direction: column-reverse !important;
         padding-top: 5px;
         width: 100%;
     }
@@ -221,7 +228,8 @@ body._lock {
         height: 100%;
     }
     .gallery-grid {
-        justify-content: center;
+        justify-content: start !important;
+        flex-direction: column !important;
     }
     .user-profile {
         padding: 0 7%;

@@ -19,17 +19,19 @@
                         <div class="gallery-grid">
                             {% for user_meme in user_meme_list %}
                                 <div class="gallery-item">
-                                    {% if user_meme.file.name|lower|slice:"-4:" == '.mp4' %}
-                                        <a href="{% url 'mim:meme_detail' meme_id=user_meme.meme_id %}" class="meme-link upload-link">
-                                            <video autoplay loop muted class="gallery-video">
-                                                <source src="{{ user_meme.file.url }}" type="video/mp4">
-                                            </video>
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'mim:meme_detail' meme_id=user_meme.meme_id %}" class="meme-link upload-link">
-                                            <img src="{{ user_meme.file.url }}" alt="User Meme" class="gallery-image">
-                                        </a>
-                                    {% endif %}
+                                    <div class="gallery-src">
+                                        {% if user_meme.file.name|lower|slice:"-4:" == '.mp4' %}
+                                            <a href="{% url 'mim:meme_detail' meme_id=user_meme.meme_id %}" class="meme-link upload-link">
+                                                <video autoplay loop muted class="gallery-video">
+                                                    <source src="{{ user_meme.file.url }}" type="video/mp4">
+                                                </video>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'mim:meme_detail' meme_id=user_meme.meme_id %}" class="meme-link upload-link">
+                                                <img src="{{ user_meme.file.url }}" alt="User Meme" class="gallery-image">
+                                            </a>
+                                        {% endif %}
+                                    </div>
                                     <div class="meme-info-stats">
                                         <span class="like-stats">
                                             <img src="{% static 'img/like.png' %}" alt="Likes" class="social like-icon" style="width: 15px; height: 15px;">

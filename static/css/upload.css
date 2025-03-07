@@ -73,7 +73,7 @@ input[type="file"] {
     height: 100%;
     justify-content: space-between;
     flex-direction: row;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding-top: 50px;
 }
@@ -83,29 +83,51 @@ input[type="file"] {
 .gallery-grid {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 900px;
     flex-wrap: wrap;
-    gap: 10%;
     position: relative;
     height: 100%;
 }
 .gallery-item {
-    width: 120px;
-    height: 120px;
+    width: 280px;
+    height: 280px;
     align-items: center;
     justify-content: center;
     display: flex;
     flex-direction: column;
-    margin: 20px;
     position: relative;
 }
+.gallery-src {
+    width: 100%;
+    min-height: 260px;
+}
+.gallery-src a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.meme-info-stats {
+    display: flex;
+    gap: 20%;
+    width: 100%;
+    font-size: 16px;
+}
+
+.meme-info-stats .like-stats,
+.meme-info-stats .comment-stats {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 .user-gallery {
-    width: 700px;
+    width: 900px;
     height: 100%;
 }
 .gallery-image, .gallery-video {
     max-width: 100%;
-    max-height: 120px !important;
+    max-height: 275px !important;
 }
 .upload-area {
     display: flex;
@@ -160,20 +182,6 @@ input[type="file"] {
     width: 130px;
     height: auto;
     position: relative;
-}
-
-.meme-info-stats {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    font-size: 12px;
-}
-
-.meme-info-stats .like-stats,
-.meme-info-stats .comment-stats {
-    display: flex;
-    align-items: center;
-    gap: 5px;
 }
 .text {
     position: absolute;
